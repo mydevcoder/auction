@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Players</title>
+
+    <!-- Bootstrap (same CDN used in your other page) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        background: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+      .team-heading {
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .table thead th {
+        vertical-align: middle;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-3">
+      <div class="d-flex justify-content-end">
+        <a href="app.html" class="btn btn-primary">⬅ Back to Home</a>
+      </div>
+    </div>
+
+    <div class="container mt-4">
+      <h2 class="text-center mb-4">All Players (Grouped by Team)</h2>
+      <div id="playersTable"></div>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:5000";
+
+      async function loadPlayers() {
+        try {
+          const res = await fetch(`${API_URL}/players`);
+          if (!res.ok) throw new Error("Failed to fetch players");
+          const players = await res.json();
+
+          // Prepare known team order
+          const teamOrder = [
+            "IMJ NINJAS",
+            "IMJ IGNITORS",
+            "IMJ TITANS",
+            "IMJ FALCONS",
+            "IMJ PHANTOMS",
+            "IMJ HAWKS",
+          ];
+
+          // Collect team IDs (when team is not populated but stored as an id)
+          const teamIdSet = new Set();
+          players.forEach((p) => {
+            if (p.team && typeof p.team === "string") teamIdSet.add(p.team);
+          });
+
+          // Fetch names for those team IDs (single round-trip per unique id)
+          const teamIdToName = {};
+          if (teamIdSet.size > 0) {
+            const promises = [...teamIdSet].map((id) =>
+              fetch(`${API_URL}/team/${id}`)
+                .then((r) => (r.ok ? r.json() : null))
+                .catch(() => null)
+            );
+            const results = await Promise.all(promises);
+            results.forEach((t) => {
+              if (t && t._id) teamIdToName[t._id] = t.name;
+            });
+          }
+
+          // Initialize groups
+          const groups = {};
+          teamOrder.forEach((n) => (groups[n] = []));
+          groups["Unknown Team"] = [];
+          groups["Unsold"] = [];
+
+          // Place players in correct group
+          players.forEach((p) => {
+            const sold = !!p.sold;
+            if (!sold) {
+              groups["Unsold"].push(p);
+              return;
+            }
+
+            // sold === true
+            let teamName = null;
+            if (p.team) {
+              if (typeof p.team === "object" && p.team.name) {
+                teamName = p.team.name;
+              } else if (typeof p.team === "string" && teamIdToName[p.team]) {
+                teamName = teamIdToName[p.team];
+              } else {
+                // team exists but no name info
+                teamName = "Unknown Team";
+              }
+            } else {
+              teamName = "Unknown Team";
+            }
+
+            // ensure the group exists
+            if (!groups[teamName]) groups[teamName] = [];
+            groups[teamName].push(p);
+          });
+
+          // Build HTML for groups (use the fixed order, then any unknown groups, then Unsold)
+          let html = "";
+
+          const orderedKeys = [...teamOrder, "Unknown Team", "Unsold"];
+          orderedKeys.forEach((groupName) => {
+            const list = groups[groupName] || [];
+            if (list.length === 0) return; // skip empty groups
+
+            html += `<h4 class="team-heading text-center">${groupName} (${list.length})</h4>`;
+            html += `
+              <div class="table-responsive">
+                <table class="table table-bordered table-sm">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Name</th>
+                      <th>Class</th>
+                      <th>Base Price</th>
+                      <th>Sold Price</th>
+                      <th>Team</th>
+                      <th>Sold</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+            `;
+
+            list.forEach((p) => {
+              // resolve displayed team name (prefer populated name, then fetched by id)
+              let displayTeam = "-";
+              if (p.team) {
+                if (typeof p.team === "object" && p.team.name)
+                  displayTeam = p.team.name;
+                else if (typeof p.team === "string" && teamIdToName[p.team])
+                  displayTeam = teamIdToName[p.team];
+                else displayTeam = (p.team && p.team.name) || p.team || "-";
+              }
+              html += `
+                <tr>
+                  <td>${escapeHtml(p.name || "-")}</td>
+                  <td>${escapeHtml(p.className || "-")}</td>
+                  <td style="text-align:center">${Number(p.basePrice || 0)}</td>
+                  <td style="text-align:center">${Number(p.soldPrice || 0)}</td>
+                  <td>${escapeHtml(displayTeam)}</td>
+                  <td style="text-align:center">${
+                    p.sold ? "✅ Yes" : "❌ No"
+                  }</td>
+                </tr>
+              `;
+            });
+
+            html += `</tbody></table></div>`;
+          });
+
+          document.getElementById("playersTable").innerHTML = html;
+        } catch (err) {
+          console.error(err);
+          document.getElementById(
+            "playersTable"
+          ).innerHTML = `<div class="alert alert-danger">Error loading players: ${escapeHtml(
+            err.message || String(err)
+          )}</div>`;
+        }
+      }
+
+      // small helper to avoid injecting raw HTML
+      function escapeHtml(str) {
+        return String(str)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      // load on page ready
+      document.addEventListener("DOMContentLoaded", loadPlayers);
+    </script>
+  </body>
+</html>

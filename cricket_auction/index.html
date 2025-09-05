@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bidding App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        form{
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .container {
+            width: 60%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .bidder-info,
+        .add-player,
+        .players-list,
+        .team-list {
+            margin: 20px 0;
+        }
+
+        .player-item {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+
+        .form-inline {
+            display: flex;
+            justify-content:center;
+            align-items: center;
+        }
+
+        .form-inline input {
+            margin-right: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .credits {
+            font-weight: bold;
+            color: green;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .team-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .team-list li {
+            margin: 5px 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+
+        <h4>Boys Bidding</h4>
+
+        <!-- Display Error Message -->
+        <!-- {% if error_message %} -->
+        <div class="error-message">
+            <!-- {{ error_message }} -->
+        </div>
+        <!-- {% endif %} -->
+
+        <!-- Display Bidder Information -->
+        <div class="bidder-info">
+            <h2>Your Credits: <span class="credits"><!--{{ bidder['credits'] }}<!----> Rs</span></h2>
+             <h2>Team Size: <span><!--{{ team_size }}/27--></span></h2> 
+        </div>
+
+        <!-- Form to Add a New Player -->
+        <div class="add-player">
+            <h3>Add a New Player</h3>
+            <!--{% if team_size < 27 %}--> <form action="/" method="POST" class="form-inline">
+                <input type="text" name="player_name" placeholder="Enter player name" required>
+                <button type="submit" name="add_player">Add Player</button>
+                </form>
+                <!--{% else %}-->
+                <!-- <p>You have already reached the maximum number of players (27) in your team.</p> -->
+                <!--{% endif %}-->
+        </div>
+
+        <!-- Players List and Bidding Options -->
+        <div class="players-list">
+            <h3>Current Players for Bidding</h3>
+            <!--{% for player in players %}-->
+            <div class="player-item">
+                <h4><!--{{ player['name'] }} (Bid: {{ player['bid_amount'] if player['bid_amount'] else 'No bids yet' }})-->
+                </h4>
+                <form action="/" method="POST" class="form-inline">
+                    <input type="hidden" name="player_id" value="{{ player['id'] }}">
+                    <input type="number" name="bid_amount" placeholder="Enter bid amount" required>
+                    <button type="submit" name="place_bid">Place Bid</button>
+                </form>
+
+                <!--{% if team_size < 27 %}--></27> <form action="/" method="POST" style="display:inline-block;">
+                    <input type="hidden" name="player_id" value="{{ player['id'] }}">
+                    <button type="submit" name="won_bid">Won</button>
+                    </form>
+                    <!--{% endif %}-->
+
+                    <form action="/" method="POST" style="display:inline-block;">
+                        <input type="hidden" name="player_id" value="{{ player['id'] }}">
+                        <button type="submit" name="close_bid">Close</button>
+                    </form>
+            </div>
+            <!--{% endfor %}-->
+        </div>
+
+        <!-- Bidder's Team -->
+        <div class="team-list">
+            <h3>Your Team</h3>
+            <ul>
+                <!--{% for player in team %}-->
+                <li><!--{{ player['player_name'] }} - {{ player['bid_amount'] }} -->Rs</li>
+                <!--{% endfor %}-->
+            </ul>
+        </div>
+<!-- Add this section in your existing HTML, wherever you'd like the button to appear -->
+    <div class="reset-bidding">
+        <form action="/reset" method="POST">
+            <button type="submit" style="background-color: red;">Reset Bidding</button>
+        </form>
+    </div>
+    </div>
+    <!-- Add this section in your existing HTML, wherever you'd like the button to appear -->
+
+
+</body>
+
+</html>

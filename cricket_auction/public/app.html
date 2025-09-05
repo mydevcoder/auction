@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #a09b9b94;
+      }
+      .nav-style {
+        /* background-color: #30bfdfd3; */
+        font-size: 1.5rem;
+      }
+      .navbar-nav a {
+        padding: 10px 40px !important;
+      }
+      .base-label {
+        font-size: large;
+      }
+      .container-md {
+        display: block;
+        width: 80vw;
+        height: 80vh;
+        /* margin: 10; */
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(14, 13, 13, 0.644);
+      }
+      .design-input {
+        border: 2px solid rgb(29, 28, 28);
+      }
+      .row {
+        margin-left: 18vw;
+      }
+
+      .drop-btn {
+        width: 120px !important;
+      }
+      .bid-btn {
+        width: 16vw;
+        height: 6vh;
+      }
+      .row-three {
+        margin-left: 17vw;
+      }
+      .btn-left {
+        margin-left: 9vw;
+      }
+      .btn-right {
+        margin-left: -1vw;
+      }
+      .clr-btn {
+        width: 6vw;
+        margin-top: 100px;
+        margin-left: 0;
+      }
+    </style>
+    <title>Document</title>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-md bg-body-light nav-style">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/"
+          ><i class="fa-regular fa-compass"></i
+        ></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavAltMarkup"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-link" aria-current="page" href="#"><b>Home</b></a>
+            <a class="nav-link" href="players.html"><b>All_players</b></a>
+            <a class="nav-link" href="/player/team"><b>Team</b></a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="container-md mt-4">
+      <div class="heading">
+        <h1 class="text-center"><b>IMJISC Premiere League</b></h1>
+        <h4 class="text-center">Cricket Auction</h4>
+      </div>
+      <div class="row mb-3">
+        <div class="mt-3 col-md-7">
+          <div class="input-group mt-3 mb-3">
+            <!-- <span class="input-group-text">@</span> -->
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control design-input"
+                id="playerName"
+                placeholder="Enter new player"
+              />
+              <label for="floatingInputGroup1 base-label"
+                >Enter new player</label
+              >
+            </div>
+          </div>
+          <!-- <input name="Listing[price]" id="price" placeholder="New player" class="form-control" required> -->
+          <div class="invalid-feedback">Enter a valid player</div>
+        </div>
+        <div class="class mt-5 col-md-2">
+          <select
+            id="classSelect"
+            class="form-control btn btn-dark dropdown-toggle drop-btn"
+          >
+            <option value="">Select Class</option>
+            <option value="III BCA">III BCA</option>
+            <option value="III BCOM">III BCOM</option>
+            <option value="III BBA">III BBA</option>
+            <option value="II BCA">II BCA</option>
+            <option value="II BCOM">II BCOM</option>
+            <option value="II BBA">II BBA</option>
+            <option value="I BCA">I BCA</option>
+            <option value="I BCOM">I BCOM</option>
+            <option value="I BBA">I BBA</option>
+          </select>
+
+          <div class="invalid-feedback">Enter a valid class</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="mt-3 col-md-7">
+          <div class="input-group mt-3 mb-3">
+            <!-- <span class="input-group-text">@</span> -->
+            <div class="form-floating">
+              <input
+                type="number"
+                class="form-control design-input"
+                id="bidPrice"
+                min="200"
+                placeholder="Bid Amount"
+              />
+              <label for="floatingInputGroup1 base-label">Bid Price</label>
+            </div>
+          </div>
+          <!-- <label for="country" class="form-label">Base Price :</label>
+                <input name="Listing[country]" id="country" type="text" value="200" class="form-control" required> -->
+          <div class="invalid-feedback">Enter a valid Points</div>
+        </div>
+        <div class="mt-5 col-md-2">
+          <button
+            type="button"
+            class="btn btn-dark drop-btn"
+            onclick="addPlayer()"
+          >
+            Enter
+          </button>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="class mt-3 col-md-2 btn-left">
+          <select
+            id="teamSelect"
+            class="form-control btn btn-dark dropdown-toggle drop-btn"
+          >
+            <option value="">Select Team</option>
+            <option value="IMJ NINJAS">IMJ NINJAS</option>
+            <option value="IMJ IGNITORS">IMJ IGNITORS</option>
+            <option value="IMJ TITANS">IMJ TITANS</option>
+            <option value="IMJ FALCONS">IMJ FALCONS</option>
+            <option value="IMJ PHANTOMS">IMJ PHANTOMS</option>
+            <option value="IMJ HAWKS">IMJ HAWKS</option>
+          </select>
+          <div class="invalid-feedback">Enter a valid team name</div>
+        </div>
+        <div class="mt-3 col-md-2 btn-right">
+          <button type="button" class="btn btn-dark" onclick="placeBid()">
+            Bid Player
+          </button>
+        </div>
+      </div>
+      <div class="row mt-3 row-three">
+        <div class="mt-3 col-md-4">
+          <button
+            type="button"
+            class="btn btn-success bid-btn"
+            onclick="finalizeAuction()"
+          >
+            Won Player
+          </button>
+        </div>
+        <div class="mt-3 col-md-3">
+          <button
+            type="button"
+            class="btn btn-danger bid-btn"
+            onclick="dropPlayer()"
+          >
+            Drop Player
+          </button>
+        </div>
+      </div>
+      <button type="button" class="btn btn-danger clr-btn" id="clearBtn">
+        Clear
+      </button>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const className = document.querySelector("#classSelect").value;
+      const API_URL = "http://localhost:5000"; // backend server
+
+      let currentAuctionId = null;
+
+      // ✅ Add new player AND start auction
+      async function addPlayer() {
+        const name = document.querySelector("#playerName").value;
+        const className = document.querySelector("#classSelect").value;
+        const basePrice = 200; // default base price (or you can fetch from input)
+
+        const res = await fetch(`${API_URL}/auction/new`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, className, basePrice }),
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          alert("Error: " + data.error);
+        } else {
+          currentAuctionId = data.auction._id;
+          alert(
+            `Auction Started for Player: ${data.player.name} (Base Price: ${data.player.basePrice})`
+          );
+        }
+      }
+
+      // // ✅ Add new player
+      // async function addPlayer() {
+      //   const name = document.querySelector("#playerName").value;
+      //   const className = document.querySelector("#classSelect").value;
+      //   const basePrice = 200;
+
+      //   const res = await fetch(`${API_URL}/player`, {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({ name, className, basePrice }),
+      //   });
+      //   const data = await res.json();
+      //   alert("Player Added: " + data.name);
+      // } // default or from input
+      // // ✅ Start Auction
+      // let currentAuctionId = null;
+      // async function startAuction(playerId) {
+      //   const res = await fetch(`${API_URL}/auction/start/${playerId}`, {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({ basePrice: 200 }),
+      //   });
+      //   const data = await res.json();
+      //   currentAuctionId = data._id;
+      //   alert("Auction Started for Player " + playerId);
+      // }
+
+      const bidInput = document.getElementById("bidPrice");
+
+      function getStep(value) {
+        return value >= 1500 ? 50 : 100;
+      }
+
+      // Handle arrow key increments
+      bidInput.addEventListener("keydown", (e) => {
+        if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+
+        e.preventDefault(); // stop default browser step
+        const value = Number(bidInput.value) || 0;
+        const step = getStep(value);
+        const dir = e.key === "ArrowUp" ? 1 : -1;
+
+        bidInput.value = value + dir * step;
+      });
+
+      // Snap typed value on blur/change
+      bidInput.addEventListener("change", () => {
+        const value = Number(bidInput.value) || 0;
+        const step = getStep(value);
+        const snapped = Math.round(value / step) * step;
+        bidInput.value = snapped;
+      });
+
+      // ✅ Place Bid
+      async function placeBid() {
+        if (!currentAuctionId) return alert("No auction running!");
+
+        const bidAmount =
+          Number(document.getElementById("bidPrice").value) || 0;
+        const teamName = document.getElementById("teamSelect").value;
+
+        if (!teamName) return alert("Please select a team!");
+
+        // Get the team from backend by name
+        const teamRes = await fetch(
+          `${API_URL}/team/byName/${encodeURIComponent(teamName)}`
+        );
+        const team = await teamRes.json();
+
+        if (team.error) return alert(team.error);
+
+        const res = await fetch(`${API_URL}/auction/bid/${currentAuctionId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ teamId: team._id, bidAmount }), // ✅ now sends the correct amount
+        });
+
+        const data = await res.json();
+        if (data.error) alert(data.error);
+        else alert("Bid Placed: " + data.currentBid);
+      }
+
+      // ✅ Finalize Auction (Won Player)
+      async function finalizeAuction() {
+        if (!currentAuctionId) return alert("No auction running!");
+
+        const res = await fetch(
+          `${API_URL}/auction/finalize/${currentAuctionId}`,
+          {
+            method: "POST",
+          }
+        );
+        const data = await res.json();
+        alert("Auction Finalized! Player sold to " + data.team.name);
+
+        currentAuctionId = null;
+      }
+      // ✅ Drop Player
+      async function dropPlayer() {
+        if (!currentAuctionId) return alert("No auction running!");
+
+        const res = await fetch(`${API_URL}/auction/drop/${currentAuctionId}`, {
+          method: "POST",
+        });
+        const data = await res.json();
+        alert(data.message);
+
+        currentAuctionId = null;
+      }
+      // ✅ Clear button handler
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        // reset text inputs
+        document.getElementById("playerName").value = "";
+        document.getElementById("bidPrice").value = "";
+
+        // reset selects if they exist
+        const classSelect = document.getElementById("classSelect");
+        if (classSelect) classSelect.selectedIndex = 0;
+
+        const teamSelect = document.getElementById("teamSelect");
+        if (teamSelect) teamSelect.selectedIndex = 0;
+
+        // reset auction state
+        currentAuctionId = null;
+
+        alert("Form cleared. Ready for new auction.");
+      });
+    </script>
+  </body>
+</html>
