@@ -1,0 +1,78 @@
+/* ---------- Global Styles ---------- */
+body {
+  background: #f8f9fa;
+  font-family: Arial, sans-serif;
+}
+
+/* Containers */
+.container-md,
+.container {
+  background: white;
+  border-radius: 8px;
+}
+
+/* Tables */
+.table {
+  font-size: 0.9rem;
+}
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Buttons */
+.bid-btn,
+.drop-btn,
+.btn {
+  border-radius: 6px;
+}
+
+/* ---------- Responsive Tweaks ---------- */
+@media (max-width: 768px) {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-size: 1.2rem;
+  }
+
+  .container-md,
+  .container {
+    width: 95% !important;
+    padding: 10px !important;
+  }
+
+  .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .table {
+    font-size: 0.8rem;
+  }
+
+  /* Allow horizontal scroll for wide tables */
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  /* Buttons stack on mobile */
+  .bid-btn,
+  .drop-btn,
+  .btn {
+    width: 100% !important;
+    margin-bottom: 10px;
+  }
+
+  /* Dropdown and inputs take full width */
+  select,
+  input[type="text"],
+  input[type="number"] {
+    width: 100% !important;
+  }
+}
+/* Smaller text on small screens */
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.9rem;
+  }
+}
