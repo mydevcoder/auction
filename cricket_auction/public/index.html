@@ -258,7 +258,7 @@
         const className = document.querySelector("#classSelect").value;
         const basePrice = 200;
 
-        const res = await fetch(`${API_URL}/auction/new`, {
+        const res = await fetch(`${API_BASE}/auction/new`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, className, basePrice }),
@@ -304,7 +304,7 @@
         if (!teamName) return alert("Please select a team!");
 
         const teamRes = await fetch(
-          `${API_URL}/team/byName/${encodeURIComponent(teamName)}`
+          `${API_BASE}/team/byName/${encodeURIComponent(teamName)}`
         );
         const team = await teamRes.json();
         if (!teamRes.ok || team.error) {
@@ -312,7 +312,7 @@
           return alert(msg);
         }
 
-        const res = await fetch(`${API_URL}/auction/bid/${currentAuctionId}`, {
+        const res = await fetch(`${API_BASE}/auction/bid/${currentAuctionId}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ teamId: team._id, bidAmount }),
@@ -327,7 +327,7 @@
       async function finalizeAuction() {
         if (!currentAuctionId) return alert("No auction running!");
         const res = await fetch(
-          `${API_URL}/auction/finalize/${currentAuctionId}`,
+          `${API_BASE}/auction/finalize/${currentAuctionId}`,
           {
             method: "POST",
           }
@@ -342,7 +342,7 @@
       // ✅ Drop Player
       async function dropPlayer() {
         if (!currentAuctionId) return alert("No auction running!");
-        const res = await fetch(`${API_URL}/auction/drop/${currentAuctionId}`, {
+        const res = await fetch(`${API_BASE}/auction/drop/${currentAuctionId}`, {
           method: "POST",
         });
         const data = await res.json();
@@ -372,7 +372,7 @@
           if (!teamName) return;
 
           const res = await fetch(
-            `${API_URL}/team/byName/${encodeURIComponent(teamName)}`
+            `${API_BASE}/team/byName/${encodeURIComponent(teamName)}`
           );
           const team = await res.json();
           if (res.ok && !team.error) updateTeamStats(team);

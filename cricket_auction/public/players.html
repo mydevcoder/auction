@@ -93,10 +93,10 @@
     </div>
 
     <script>
-      const API_URL = "http://localhost:5000";
+      const API_BASE = "https://auction-jg8t.onrender.com";
 
       async function loadPlayers() {
-        const res = await fetch(`${API_URL}/players`);
+        const res = await fetch(`${API_BASE}/players`);
         const players = await res.json();
 
         const teams = {
@@ -198,7 +198,7 @@
           .addEventListener("click", async () => {
             try {
               /* >>>  CALL THE NEW CHECKPOINT ROUTE  <<< */
-              const res = await fetch(`${API_URL}/auction/checkpoint`, {
+              const res = await fetch(`${API_BASE}/auction/checkpoint`, {
                 method: "POST",
               });
               const data = await res.json();
@@ -216,7 +216,7 @@
           return;
 
         try {
-          const res = await fetch(`${API_URL}/player/${playerId}`, {
+          const res = await fetch(`${API_BASE}/player/${playerId}`, {
             method: "DELETE",
           });
           const data = await res.json();

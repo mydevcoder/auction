@@ -56,11 +56,11 @@
     </div>
 
     <script>
-      const API_URL = "http://localhost:5000";
+      const API_BASE = "https://auction-jg8t.onrender.com";
       let allTeams = [];
 
       async function loadTeams() {
-        const res = await fetch(`${API_URL}/teams`);
+        const res = await fetch(`${API_BASE}/teams`);
         allTeams = await res.json();
       }
 
