@@ -2,37 +2,41 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
-// Load environment variables if dotenv is available
-try {
-  require("dotenv").config();
-} catch (_err) {
-  // dotenv not installed; proceeding with process.env only
-}
+require("dotenv").config();
 
+const PORT = process.env.PORT || 5000;
 const app = express();
+
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
+
+// ✅ MongoDB Connection
+const MONGO_URI =
+  process.env.MONGO_URI ||
+  process.env.MONGODB_URI ||
+  "mongodb://127.0.0.1:27017/cricketAuction";
+
+mongoose
+  .connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000,
+    connectTimeoutMS: 10000,
+  })
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // Default route → serve app.html
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "app.html"));
 });
-const MONGO_URL =
-  process.env.MONGO_URL ||
-  process.env.MONGODB_URI ||
-  "mongodb://127.0.0.1:27017/cricketAuction";
-// MongoDB Connection
-mongoose
-  .connect(MONGO_URL)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.error(err));
 
-// Schemas
+// ----------------- Schemas -----------------
 const teamSchema = new mongoose.Schema({
   name: String,
   credits: { type: Number, default: 10000 },
-  usedCredits: { type: Number, default: 0 }, // ✅ Track used credits separately
+  usedCredits: { type: Number, default: 0 },
   players: [{ type: mongoose.Schema.Types.ObjectId, ref: "Player" }],
 });
 
@@ -55,7 +59,7 @@ const Team = mongoose.model("Team", teamSchema);
 const Player = mongoose.model("Player", playerSchema);
 const Auction = mongoose.model("Auction", auctionSchema);
 
-// Routes
+// ----------------- Routes -----------------
 
 // Create player and start auction immediately
 app.post("/auction/new", async (req, res) => {
@@ -183,6 +187,8 @@ app.post("/auction/finalize/:auctionId", async (req, res) => {
   res.json({ message: "Auction finalized", team, player });
 });
 
+// ----------------- Utility Routes -----------------
+
 // Initial Teams
 const initialTeams = [
   "IMJ NINJAS",
@@ -204,7 +210,7 @@ async function ensureTeams() {
 }
 ensureTeams();
 
-// Save & Reset Route - resets sold players and team rosters
+// Save & Reset Route
 app.post("/auction/save-reset", async (_req, res) => {
   try {
     const soldPlayers = await Player.find({ sold: true });
@@ -221,7 +227,7 @@ app.post("/auction/save-reset", async (_req, res) => {
     const teams = await Team.find();
     for (const team of teams) {
       team.credits = 10000;
-      team.usedCredits = 0; // ✅ Reset used credits
+      team.usedCredits = 0;
       team.players = [];
       await team.save();
     }
@@ -235,7 +241,7 @@ app.post("/auction/save-reset", async (_req, res) => {
   }
 });
 
-// Checkpoint – keeps sold players & standings, closes only open auctions
+// Checkpoint – closes open auctions
 app.post("/auction/checkpoint", async (_req, res) => {
   try {
     await Auction.deleteMany({});
@@ -268,7 +274,7 @@ app.post("/auction/drop/:id", async (req, res) => {
   }
 });
 
-// Delete a player permanently (unsold)
+// Delete unsold player
 app.delete("/player/:id", async (req, res) => {
   try {
     const player = await Player.findById(req.params.id);
@@ -285,8 +291,7 @@ app.delete("/player/:id", async (req, res) => {
   }
 });
 
-// Server
-const PORT = process.env.PORT || 5000;
+// ----------------- Server -----------------
 app.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
 );
