@@ -2,6 +2,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+// Load environment variables if dotenv is available
+try {
+  require("dotenv").config();
+} catch (_err) {
+  // dotenv not installed; proceeding with process.env only
+}
 
 const app = express();
 app.use(express.json());
@@ -12,10 +18,13 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "app.html"));
 });
-
+const MONGO_URL =
+  process.env.MONGO_URL ||
+  process.env.MONGODB_URI ||
+  "mongodb://127.0.0.1:27017/cricketAuction";
 // MongoDB Connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/cricketAuction")
+  .connect(MONGO_URL)
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.error(err));
 
@@ -277,7 +286,7 @@ app.delete("/player/:id", async (req, res) => {
 });
 
 // Server
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)
 );
