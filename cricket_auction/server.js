@@ -27,9 +27,9 @@ mongoose
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Default route → serve app.html
+// Default route → serve index.html
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "app.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // ----------------- Schemas -----------------
