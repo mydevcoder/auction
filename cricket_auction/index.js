@@ -195,7 +195,7 @@ mongoose
   .then(async () => {
     console.log('✅ MongoDB Connected');
     await ensureTeams();
-    app.listen(process.env.PORT, () => console.log(`🚀 Server ready on http://localhost:${PORT}`));
+    app.listen(process.env.PORT, () => console.log(`🚀 Server ready on https://auction-loa7k8c77-mydevcoders-projects.vercel.app`));
   })
   .catch((err) => {
     //  safe log – never crashes on undefined again
