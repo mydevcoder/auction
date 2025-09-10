@@ -6,7 +6,7 @@
   "types": "module",
   "scripts": {
     "build": "nodemon build",
-    "start": "nodemon server.js"
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +22,8 @@
     "mongodb": "^6.19.0",
     "mongoose": "^8.18.0",
     "nodemon": "^3.1.10",
-    "path-to-regexp": "^8.3.0"
+    "path-to-regexp": "^8.3.0",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.1"
