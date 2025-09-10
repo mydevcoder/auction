@@ -24,7 +24,7 @@ app.get('/', (_req, res) =>
 ================================================================= */
 const teamSchema = new mongoose.Schema({
   name: String,
-  credits: { type: Number, default: 10000 },
+  credits: { type: Number, default: 12000 },
   usedCredits: { type: Number, default: 0 },
   players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }],
 });
@@ -37,6 +37,7 @@ const playerSchema = new mongoose.Schema({
   team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', default: null },
   soldPrice: { type: Number, default: 0 },
 });
+
 
 const auctionSchema = new mongoose.Schema({
   player: { type: mongoose.Schema.Types.ObjectId, ref: 'Player' },
@@ -194,7 +195,7 @@ mongoose
   .then(async () => {
     console.log('✅ MongoDB Connected');
     await ensureTeams();
-    app.listen(PORT, () => console.log(`🚀 Server ready on http://localhost:${PORT}`));
+    app.listen(process.env.PORT, () => console.log(`🚀 Server ready on http://localhost:${PORT}`));
   })
   .catch((err) => {
     //  safe log – never crashes on undefined again

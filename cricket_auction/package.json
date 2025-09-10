@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "module",
   "scripts": {
-    "build": "npm install &&  npm install --prefix public && npm run build --prefix public",
+    "build": "nodemon build",
     "start": "nodemon server.js"
   },
   "keywords": [],
@@ -19,6 +19,7 @@
     "ejs-mate": "^4.0.0",
     "express": "^5.1.0",
     "method-override": "^3.0.0",
+    "mongodb": "^6.19.0",
     "mongoose": "^8.18.0",
     "nodemon": "^3.1.10",
     "path-to-regexp": "^8.3.0"

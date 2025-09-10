@@ -8,7 +8,7 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "https://auction-jg8t.onrender.com",
       "dest": "index.js"
     }
   ]
