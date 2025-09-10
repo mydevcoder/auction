@@ -69,11 +69,12 @@
     </style>
   </head>
   <body>
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-md bg-body-light nav-style">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#"
-          ><i class="fa-solid fa-ranking-star"></i
-        ></a>
+        <a class="navbar-brand" href="#">
+          <i class="fa-solid fa-ranking-star"></i>
+        </a>
         <button
           class="navbar-toggler"
           data-bs-toggle="collapse"
@@ -90,12 +91,13 @@
       </div>
     </nav>
 
+    <!-- Auction Container -->
     <div class="container-md mt-4">
       <h1 class="text-center"><b>IMJISC Premiere League</b></h1>
       <h4 class="text-center">Player Auction</h4>
 
       <div class="row-details">
-        <!-- player / class -->
+        <!-- Player Input -->
         <div class="row mb-3 input-field">
           <div class="mt-3 col-md-7">
             <div class="form-floating">
@@ -104,7 +106,8 @@
                 class="form-control design-input"
                 id="playerName"
                 placeholder="Enter new player"
-              /><label>Enter new player</label>
+              />
+              <label>Enter new player</label>
             </div>
           </div>
           <div class="class mt-5 col-md-2">
@@ -126,7 +129,7 @@
           </div>
         </div>
 
-        <!-- bid / enter -->
+        <!-- Bid Input -->
         <div class="row">
           <div class="mt-0 col-md-7">
             <div class="form-floating">
@@ -136,18 +139,18 @@
                 id="bidPrice"
                 min="200"
                 placeholder="Bid Amount"
-              /><label>Bid Price</label>
+              />
+              <label>Bid Price</label>
             </div>
           </div>
           <div class="mt-3 col-md-2">
-            <!-- kept plain; we bind click via JS immediately below -->
             <button type="button" id="enterBtn" class="btn btn-dark drop-btn">
               Enter
             </button>
           </div>
         </div>
 
-        <!-- team / bid -->
+        <!-- Team & Bid -->
         <div class="row mb-3">
           <div class="class mt-3 col-md-2 btn-left">
             <select
@@ -170,7 +173,7 @@
           </div>
         </div>
 
-        <!-- finalize / drop -->
+        <!-- Finalize & Drop -->
         <div class="row mt-3 row-three">
           <div class="mt-3 col-md-4">
             <button type="button" class="btn btn-success bid-btn" id="winBtn">
@@ -184,34 +187,35 @@
           </div>
         </div>
 
-        <!-- clear -->
+        <!-- Clear -->
         <button type="button" class="btn btn-danger clr-btn" id="clearBtn">
           Clear
         </button>
       </div>
 
-      <!-- stats -->
+      <!-- Stats -->
       <div class="row mt-4">
         <div class="col-md-4">
           <label><b>Total Credits:</b></label>
           <span id="totalCredits">10000</span>
         </div>
         <div class="col-md-4">
-          <label><b>Used Credits:</b></label> <span id="usedCredits">0</span>
+          <label><b>Used Credits:</b></label>
+          <span id="usedCredits">0</span>
         </div>
         <div class="col-md-4">
-          <label><b>Players:</b></label> <span id="playerCount">0 / 26</span>
+          <label><b>Players:</b></label>
+          <span id="playerCount">0 / 26</span>
         </div>
       </div>
     </div>
 
-    <script>
-      // ---------- CONFIG ----------
-      const API_BASE = "https://auction-jg8t.onrender.com"; // adjust if needed
+    <!-- Script -->
+    <script defer>
+      const API_BASE = "https://auction-jg8t.onrender.com"; // Render backend URL
       let currentAuctionId = null;
       const $ = (id) => document.getElementById(id);
 
-      // small UI alert helper
       const alertBox = (msg, success = false) => {
         const wrap = document.createElement("div");
         wrap.className = `alert alert-${
@@ -223,46 +227,24 @@
         setTimeout(() => wrap.remove(), 3000);
       };
 
-      // ---------- HELPER: quick server ping (for debug) ----------
       async function pingServer() {
         try {
-          const res = await fetch(`${API_BASE}/players`, { method: "GET" });
-          if (!res.ok) {
-            console.warn("Server ping returned non-OK:", res.status);
-            return false;
-          }
-          console.log("Server reachable");
-          return true;
-        } catch (err) {
-          console.warn("Server ping failed:", err);
+          const res = await fetch(`${API_BASE}/players`);
+          return res.ok;
+        } catch {
           return false;
         }
       }
 
-      // ---------- ENTER (addPlayer) ----------
       async function addPlayer() {
-        console.log("addPlayer() called");
         const name = $("playerName").value.trim();
         const className = $("classSelect").value;
-        if (!name) {
-          alertBox("Player name required");
-          return;
-        }
-        if (!className) {
-          alertBox("Class required");
-          return;
-        }
+        if (!name || !className)
+          return alertBox("Player name and class required");
 
         $("enterBtn").disabled = true;
         try {
-          const serverOk = await pingServer();
-          if (!serverOk) {
-            throw new Error(
-              "Cannot reach server at " +
-                API_BASE +
-                " — check API_BASE or network."
-            );
-          }
+          if (!(await pingServer())) throw new Error("Server not reachable");
 
           const res = await fetch(`${API_BASE}/auction/new`, {
             method: "POST",
@@ -270,37 +252,31 @@
             body: JSON.stringify({ name, className, basePrice: 200 }),
           });
 
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) {
-            const errMsg = data.error || `Server returned ${res.status}`;
-            throw new Error(errMsg);
-          }
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Failed to start auction");
 
-          currentAuctionId = data.auction && data.auction._id;
-          console.log("Auction started:", data);
+          currentAuctionId = data.auction?._id;
           alertBox(`Auction started for “${data.player.name}”`, true);
           $("bidPrice").value = data.player.basePrice || 200;
         } catch (err) {
-          console.error("addPlayer error:", err);
-          alertBox(err.message || "Failed to start auction");
+          alertBox(err.message);
         } finally {
           $("enterBtn").disabled = false;
         }
       }
 
-      // ---------- PLACE BID ----------
       async function placeBid() {
         if (!currentAuctionId) return alertBox("No auction running!");
         const bidAmount = Number($("bidPrice").value) || 0;
         const teamName = $("teamSelect").value;
         if (!teamName) return alertBox("Select a team");
+
         try {
           const teamRes = await fetch(
             `${API_BASE}/team/byName/${encodeURIComponent(teamName)}`
           );
           const team = await teamRes.json();
-          if (!teamRes.ok || team.error)
-            throw new Error(team.error || "Team not found");
+          if (!teamRes.ok || team.error) throw new Error("Team not found");
 
           const res = await fetch(
             `${API_BASE}/auction/bid/${currentAuctionId}`,
@@ -310,16 +286,15 @@
               body: JSON.stringify({ teamId: team._id, bidAmount }),
             }
           );
-          const data = await res.json().catch(() => ({}));
+
+          const data = await res.json();
           if (!res.ok) throw new Error(data.error || "Bid failed");
           alertBox(`Bid placed: ${data.currentBid}`, true);
         } catch (err) {
-          console.error("placeBid error:", err);
-          alertBox(err.message || "Failed to place bid");
+          alertBox(err.message);
         }
       }
 
-      // ---------- FINALIZE (Won) ----------
       async function finalizeAuction() {
         if (!currentAuctionId) return alertBox("No auction running!");
         try {
@@ -327,23 +302,21 @@
             `${API_BASE}/auction/finalize/${currentAuctionId}`,
             { method: "POST" }
           );
-          const data = await res.json().catch(() => ({}));
+          const data = await res.json();
           if (!res.ok) throw new Error(data.error || "Finalization failed");
+
           alertBox(`Player won by ${data.team.name}`, true);
           updateTeamStats(data.team);
           currentAuctionId = null;
-          // clear inputs after finalize
           $("playerName").value = "";
           $("bidPrice").value = "";
           $("classSelect").selectedIndex = 0;
           $("teamSelect").selectedIndex = 0;
         } catch (err) {
-          console.error("finalize error:", err);
-          alertBox(err.message || "Failed to finalize auction");
+          alertBox(err.message);
         }
       }
 
-      // ---------- DROP ----------
       async function dropPlayer() {
         if (!currentAuctionId) return alertBox("No auction running!");
         try {
@@ -351,28 +324,24 @@
             `${API_BASE}/auction/drop/${currentAuctionId}`,
             { method: "POST" }
           );
-          const data = await res.json().catch(() => ({}));
+          const data = await res.json();
           if (!res.ok) throw new Error(data.error || "Drop failed");
+
           alertBox(data.message, true);
           currentAuctionId = null;
-          // reset UI
           $("playerName").value = "";
           $("bidPrice").value = "";
           $("classSelect").selectedIndex = 0;
           $("teamSelect").selectedIndex = 0;
         } catch (err) {
-          console.error("dropPlayer error:", err);
-          alertBox(err.message || "Failed to drop player");
+          alertBox(err.message);
         }
       }
 
-      // ---------- UI helpers ----------
       function updateTeamStats(team) {
         $("totalCredits").textContent = team.credits;
         $("usedCredits").textContent = team.usedCredits || 0;
-        $("playerCount").textContent = `${
-          (team.players && team.players.length) || 0
-        } / 26`;
+        $("playerCount").textContent = `${team.players?.length || 0} / 26`;
       }
 
       $("clearBtn").addEventListener("click", () => {
@@ -383,7 +352,6 @@
         currentAuctionId = null;
       });
 
-      // when team select changes, fetch its details
       $("teamSelect").addEventListener("change", async (e) => {
         const teamName = e.target.value;
         if (!teamName) return;
@@ -393,12 +361,9 @@
           );
           const team = await res.json();
           if (res.ok && !team.error) updateTeamStats(team);
-        } catch (err) {
-          console.warn("teamSelect change error", err);
-        }
+        } catch {}
       });
 
-      // ENTER key handlers
       $("playerName").addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -412,7 +377,6 @@
         }
       });
 
-      // bid arrow step logic (keeps previous behavior)
       const bidInput = $("bidPrice");
       const getStep = (v) => (v >= 1500 ? 50 : 100);
       bidInput.addEventListener("keydown", (e) => {
@@ -428,22 +392,12 @@
         bidInput.value = Math.round(val / step) * step;
       });
 
-      // ---------- BIND buttons IMMEDIATELY (no DOMContentLoaded wrapper) ----------
-      // the elements exist because this script is at the bottom of the body
-      const enterBtn = $("enterBtn");
-      if (enterBtn) enterBtn.addEventListener("click", addPlayer);
+      $("enterBtn").addEventListener("click", addPlayer);
+      $("bidBtn").addEventListener("click", placeBid);
+      $("winBtn").addEventListener("click", finalizeAuction);
+      $("dropBtn").addEventListener("click", dropPlayer);
 
-      const bidBtn = $("bidBtn");
-      if (bidBtn) bidBtn.addEventListener("click", placeBid);
-
-      const winBtn = $("winBtn");
-      if (winBtn) winBtn.addEventListener("click", finalizeAuction);
-
-      const dropBtn = $("dropBtn");
-      if (dropBtn) dropBtn.addEventListener("click", dropPlayer);
-
-      // final console log so you can confirm script loaded
-      console.log("Auction page script loaded. API_BASE:", API_BASE);
+      console.log("Auction page loaded. API_BASE:", API_BASE);
     </script>
   </body>
 </html>

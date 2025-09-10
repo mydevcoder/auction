@@ -9,7 +9,13 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
 
     <style>
       /* General table styling */
@@ -64,7 +70,7 @@
       .back-btn {
         flex: 0;
       }
-      .btn-bck{
+      .btn-bck {
         margin: 10px;
       }
     </style>
@@ -77,8 +83,12 @@
         <div></div>
         <!-- Empty div to balance spacing -->
         <h2>All Players (Grouped by Team)</h2>
-        <a href="/index.html" class="btn btn-light back-btn btn-bck"><i class="fa-solid fa-left-long"></i></a>
-        <a href="/teams.html" class="btn btn-light back-btn btn-bck"><i class="fa-solid fa-right-long"></i></i></a>
+        <a href="/index.html" class="btn btn-light back-btn btn-bck"
+          ><i class="fa-solid fa-left-long"></i
+        ></a>
+        <a href="/teams.html" class="btn btn-light back-btn btn-bck"
+          ><i class="fa-solid fa-right-long"></i
+        ></a>
       </div>
 
       <div id="playersSection">
@@ -93,101 +103,106 @@
     </div>
 
     <script>
-      const API_BASE = "https://auction-jg8t.onrender.com";
+      // ✅ Backend API base URL (Render deployment)
+      const API_BASE = "https://auction-jg8t.onrender.com/api";
 
       async function loadPlayers() {
-        const res = await fetch(`${API_BASE}/players`);
-        const players = await res.json();
+        try {
+          const res = await fetch(`${API_BASE}/players`);
+          const players = await res.json();
 
-        const teams = {
-          "IMJ NINJAS": [],
-          "IMJ IGNITORS": [],
-          "IMJ TITANS": [],
-          "IMJ FALCONS": [],
-          "IMJ PHANTOMS": [],
-          "IMJ HAWKS": [],
-        };
-        const unsoldPlayers = [];
+          const teams = {
+            "IMJ NINJAS": [],
+            "IMJ IGNITORS": [],
+            "IMJ TITANS": [],
+            "IMJ FALCONS": [],
+            "IMJ PHANTOMS": [],
+            "IMJ HAWKS": [],
+          };
+          const unsoldPlayers = [];
 
-        players.forEach((p) => {
-          if (p.sold && p.team && p.team.name) {
-            teams[p.team.name].push(p);
-          } else {
-            unsoldPlayers.push(p);
-          }
-        });
+          players.forEach((p) => {
+            if (p.sold && p.team && p.team.name) {
+              teams[p.team.name].push(p);
+            } else {
+              unsoldPlayers.push(p);
+            }
+          });
 
-        let html = "";
+          let html = "";
 
-        // Teams Table
-        Object.keys(teams).forEach((teamName) => {
-          html += `<h4 class="mt-4 text-center">${teamName}</h4>`;
+          // Teams Table
+          Object.keys(teams).forEach((teamName) => {
+            html += `<h4 class="mt-4 text-center">${teamName}</h4>`;
+            html += `<div class="table-responsive">
+              <table class="table table-sm table-striped table-bordered table-hover ">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>Base Price</th>
+                    <th>Sold</th>
+                    <th>Team</th>
+                    <th>Sold Price</th>
+                  </tr>
+                </thead>
+                <tbody>`;
+
+            if (teams[teamName].length > 0) {
+              teams[teamName].forEach((p) => {
+                html += `<tr>
+                  <td>${p.name}</td>
+                  <td>${p.className}</td>
+                  <td>${p.basePrice}</td>
+                  <td>✅ Yes</td>
+                  <td>${p.team.name}</td>
+                  <td>${p.soldPrice}</td>
+                </tr>`;
+              });
+            } else {
+              html += `<tr><td colspan="6" class="text-center">No players yet</td></tr>`;
+            }
+
+            html += `</tbody></table></div>`;
+          });
+
+          // Unsold Players Table (Compact)
+          html += `<h4 class="mt-3 text-center">Unsold Players</h4>`;
           html += `<div class="table-responsive">
-            <table class="table table-sm table-striped table-bordered table-hover ">
+            <table class="table table-sm table-striped table-bordered table-hover">
               <thead class="table-dark">
                 <tr>
                   <th>Name</th>
                   <th>Class</th>
                   <th>Base Price</th>
-                  <th>Sold</th>
-                  <th>Team</th>
-                  <th>Sold Price</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>`;
 
-          if (teams[teamName].length > 0) {
-            teams[teamName].forEach((p) => {
+          if (unsoldPlayers.length > 0) {
+            unsoldPlayers.forEach((p) => {
               html += `<tr>
                 <td>${p.name}</td>
                 <td>${p.className}</td>
                 <td>${p.basePrice}</td>
-                <td>✅ Yes</td>
-                <td>${p.team.name}</td>
-                <td>${p.soldPrice}</td>
+                <td>
+                  <button class="btn btn-danger btn-sm" onclick="deletePlayer('${p._id}')">
+                    Delete
+                  </button>
+                </td>
               </tr>`;
             });
           } else {
-            html += `<tr><td colspan="6" class="text-center">No players yet</td></tr>`;
+            html += `<tr><td colspan="4" class="text-center">No unsold players</td></tr>`;
           }
 
           html += `</tbody></table></div>`;
-        });
 
-        // Unsold Players Table (Compact)
-        html += `<h4 class="mt-3 text-center">Unsold Players</h4>`;
-        html += `<div class="table-responsive">
-          <table class="table table-sm table-striped table-bordered table-hover">
-            <thead class="table-dark">
-              <tr>
-                <th>Name</th>
-                <th>Class</th>
-                <th>Base Price</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>`;
-
-        if (unsoldPlayers.length > 0) {
-          unsoldPlayers.forEach((p) => {
-            html += `<tr>
-              <td>${p.name}</td>
-              <td>${p.className}</td>
-              <td>${p.basePrice}</td>
-              <td>
-                <button class="btn btn-danger btn-sm" onclick="deletePlayer('${p._id}')">
-                  Delete
-                </button>
-              </td>
-            </tr>`;
-          });
-        } else {
-          html += `<tr><td colspan="4" class="text-center">No unsold players</td></tr>`;
+          document.getElementById("playersTable").innerHTML = html;
+        } catch (err) {
+          alert("Failed to load players: " + err.message);
         }
-
-        html += `</tbody></table></div>`;
-
-        document.getElementById("playersTable").innerHTML = html;
       }
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -197,13 +212,11 @@
           .getElementById("resetPlayersBtn")
           .addEventListener("click", async () => {
             try {
-              /* >>>  CALL THE NEW CHECKPOINT ROUTE  <<< */
               const res = await fetch(`${API_BASE}/auction/checkpoint`, {
                 method: "POST",
               });
               const data = await res.json();
-              alert(data.message);
-              /* refresh the page to show the saved state */
+              alert(data.message || "Checkpoint saved!");
               await loadPlayers();
             } catch (err) {
               alert("Error: " + err.message);

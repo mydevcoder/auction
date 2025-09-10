@@ -44,7 +44,7 @@ const Player = mongoose.model("Player", playerSchema);
 const Auction = mongoose.model("Auction", auctionSchema);
 
 /* =================================================================
-   ROUTES  (now prefixed with /api)
+   ROUTES  (all prefixed with /api)
 ================================================================= */
 const router = express.Router();
 
@@ -160,7 +160,7 @@ router.post("/auction/save-reset", async (_req, res) => {
     { sold: false, soldPrice: 0, team: null }
   );
   await Auction.deleteMany({});
-  await Team.updateMany({}, { credits: 10000, usedCredits: 0, players: [] });
+  await Team.updateMany({}, { credits: 12000, usedCredits: 0, players: [] });
   res.json({ message: "All sold players reset. Unsold remain unchanged." });
 });
 
@@ -205,7 +205,7 @@ async function ensureTeams() {
 }
 
 /* =================================================================
-   DB CONNECT (no app.listen!)
+   DB CONNECT
 ================================================================= */
 const MONGO_URI = process.env.MONGO_URI;
 
@@ -226,7 +226,15 @@ mongoose
   });
 
 /* =================================================================
-   EXPORT FOR VERCEL
+   EXPORT + LISTEN
 ================================================================= */
+if (!process.env.VERCEL) {
+  // Normal Express server (for Render / local)
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () =>
+    console.log(`🚀 Server running at http://localhost:${PORT}`)
+  );
+}
+
 module.exports = app;
 module.exports.handler = serverless(app);

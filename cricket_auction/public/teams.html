@@ -9,7 +9,13 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <style>
       body {
         background: #f8f9fa;
@@ -26,7 +32,7 @@
         max-width: 800px;
         margin: auto;
       } /* keeps tables narrower */
-      .btn-bck{
+      .btn-bck {
         margin: 10px;
       }
     </style>
@@ -35,12 +41,14 @@
     <div class="container mt-4 mb-4">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Teams & Players</h1>
-        <a href="index.html" class="btn btn-light back-btn btn-bck"><i class="fa-solid fa-left-long"></i></a>
+        <a href="index.html" class="btn btn-light back-btn btn-bck"
+          ><i class="fa-solid fa-left-long"></i
+        ></a>
       </div>
 
       <!-- Dropdown to select team -->
       <div class="team-select mb-5">
-        <select id="teamSelect" class="form-select ">
+        <select id="teamSelect" class="form-select">
           <option value="">-- Select a Team --</option>
           <option value="IMJ NINJAS">IMJ NINJAS</option>
           <option value="IMJ IGNITORS">IMJ IGNITORS</option>
@@ -52,16 +60,24 @@
       </div>
 
       <!-- Table container -->
-      <div id="teamTableContainer" class="mt-4 mb-4" ></div>
+      <div id="teamTableContainer" class="mt-4 mb-4"></div>
     </div>
 
     <script>
-      const API_BASE = "https://auction-jg8t.onrender.com";
+      // ✅ Backend API base URL (Render deployment)
+      const API_BASE = "https://auction-jg8t.onrender.com/api";
       let allTeams = [];
 
       async function loadTeams() {
-        const res = await fetch(`${API_BASE}/teams`);
-        allTeams = await res.json();
+        try {
+          const res = await fetch(`${API_BASE}/teams`);
+          if (!res.ok) throw new Error("Failed to fetch teams");
+          allTeams = await res.json();
+        } catch (err) {
+          document.getElementById(
+            "teamTableContainer"
+          ).innerHTML = `<div class="alert alert-danger text-center">Error loading teams: ${err.message}</div>`;
+        }
       }
 
       function renderTeam(teamName) {
@@ -95,7 +111,7 @@
               <tbody>
         `;
 
-        if (team.players.length > 0) {
+        if (team.players && team.players.length > 0) {
           team.players.forEach((p) => {
             html += `
               <tr>
